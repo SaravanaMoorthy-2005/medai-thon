@@ -29,7 +29,7 @@ import {
   Cross,
   Eye,
 } from "lucide-react";
-import { useApp, api, login, sendEvent, safely } from "./api";
+import { useApp, api, login, sendEvent, safely, downloadEvidenceCsv } from "./api";
 import { Hospital } from "./Hospital";
 import { Hardware } from "./Hardware";
 import { Technique } from "./Technique";
@@ -1111,23 +1111,7 @@ function Analytics() {
         </label>
         <button
           className="button"
-          onClick={() =>
-            safely(async () => {
-              const response = await fetch(`/api/export?ward=${ward}`, {
-                credentials: "include",
-              });
-              if (!response.ok) {
-                const result = await response.json();
-                throw new Error(result.error || "Export was not authorized.");
-              }
-              const url = URL.createObjectURL(await response.blob());
-              const link = document.createElement("a");
-              link.href = url;
-              link.download = "hygiene-evidence.csv";
-              link.click();
-              setTimeout(() => URL.revokeObjectURL(url), 1000);
-            })
-          }
+          onClick={() => safely(() => downloadEvidenceCsv(ward))}
         >
           <Download size={16} />
           Export ward evidence
